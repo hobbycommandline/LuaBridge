@@ -4,6 +4,7 @@
 - Converts argument and response types
 - Lua Callback functions allow you to pass callbacks from Lua to Kotlin and call them.
 - Expose a set of @JVMStatic methods to Lua that you define.
+- Example usage in [Hobby-Voice-Command-Line](https://github.com/hobbycommandline/Hobby-Voice-Command-Line)
 
 ## Security
 
