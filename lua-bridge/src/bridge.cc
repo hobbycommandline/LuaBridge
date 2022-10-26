@@ -14,6 +14,9 @@ extern "C" {
 #include <android/log.h>
 namespace jni_bridge {
 	jclass Integer = NULL;
+	jclass Long = NULL;
+	jmethodID long_value = 0;
+	jmethodID new_long = 0;
 	jclass Float = NULL;
 	jmethodID float_value = 0;
 	jclass Double = NULL;
@@ -223,6 +226,8 @@ public:
 		// but its probably this
 		if (env->IsSameObject(objectClass, jni_bridge::Integer)) {
 			lua_pushinteger(L, env->CallIntMethod(object, jni_bridge::int_value));
+		} else if (env->IsSameObject(objectClass, jni_bridge::Long)) {
+			lua_pushinteger(L, env->CallLongMethod(object, jni_bridge::long_value));
 		} else if (env->IsSameObject(objectClass, jni_bridge::Double)) {
 			lua_pushnumber(L, env->CallDoubleMethod(object, jni_bridge::double_value));
 		} else if (env->IsSameObject(objectClass, jni_bridge::Float)) {
@@ -269,7 +274,7 @@ public:
 		if (lua_isinteger(L, -1)) {
 			lua_Integer i = lua_tointeger(L, -1);
 			lua_pop(L, 1);
-			return env->NewObject(jni_bridge::Integer, jni_bridge::new_integer, (int)i);
+			return env->NewObject(jni_bridge::Long, jni_bridge::new_long, i);
 		} else if (lua_isboolean(L, -1)) { // must come after string, integer
 			lua_Integer b = lua_toboolean(L, -1);
 			lua_pop(L, 1);
@@ -419,6 +424,9 @@ void setup(JNIEnv* env, jstring files_path) {
 	local = env->FindClass("java/lang/Integer");
 	jni_bridge::Integer = (jclass)env->NewGlobalRef(local);
 	env->DeleteLocalRef(local);
+	local = env->FindClass("java/lang/Long");
+	jni_bridge::Long = (jclass)env->NewGlobalRef(local);
+	env->DeleteLocalRef(local);
 
 	local = env->FindClass("java/lang/Float");
 	jni_bridge::Float = (jclass)env->NewGlobalRef(local);
@@ -493,6 +501,8 @@ void setup(JNIEnv* env, jstring files_path) {
 
 	jni_bridge::int_value = env->GetMethodID(jni_bridge::Integer, "intValue", "()I");
 	jni_bridge::new_integer = env->GetMethodID(jni_bridge::Integer, "<init>", "(I)V");
+	jni_bridge::long_value = env->GetMethodID(jni_bridge::Long, "longValue", "()J");
+	jni_bridge::new_long = env->GetMethodID(jni_bridge::Long, "<init>", "(J)V");
 
 	jni_bridge::new_callback = env->GetMethodID(jni_bridge::Callback, "<init>",
 																							"(Lorg/hobby/luabridge/LuaDispatcher;I)V");
